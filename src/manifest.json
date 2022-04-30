@@ -1,0 +1,22 @@
+{
+  "name": "Mocker tool",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "An extension template",
+  "author": "Jian.niu",
+  "icons": {
+    "32": "assets/icons/logo.512x512.png",
+    "72": "assets/icons/logo.512x512.png",
+    "128": "assets/icons/logo.512x512.png",
+    "512": "assets/icons/logo.512x512.png"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
+  ],
+  "host_permissions":["https://*/"],
+  "background": {
+    "service_worker": "background-service-worker.js"
+  },
+  "devtools_page": "Pages/DevTools/index.html"
+}

@@ -1,0 +1,27 @@
+@import "~@common/util.less";
+
+:host {
+  display: block;
+  height: 26px;
+  background-color: var(--color-background-elevation-1);
+  border-bottom: 1px solid var(--divider-line);
+}
+
+.icon {
+  height: 24px;
+  width: 28px;
+  .icon();
+}
+#refresh {
+  -webkit-mask-image: url(~@assets/devtool/refresh.png);
+}
+#switch-light.on {
+  -webkit-mask-image: url(~@assets/devtool/indicator-light.png);
+  background-color: var(--color-accent-green);
+}
+#switch.off {
+  -webkit-mask-image: url(~@assets/devtool/indicator-circle.png);
+}
+#clear {
+  -webkit-mask-image: url(~@assets/devtool/clear.png);
+}

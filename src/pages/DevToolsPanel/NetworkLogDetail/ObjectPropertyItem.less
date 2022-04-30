@@ -1,0 +1,68 @@
+@import "~@common/util.less";
+
+:host {
+  display: block;
+
+  #self {
+    display: flex;
+    line-height: 16px;
+    align-items: flex-start;
+
+    #triangle {
+      visibility: hidden;
+      .icon();
+      height: 1em;
+      width: 1em;
+      -webkit-mask-image: url(~@assets/devtool/triangle.svg);
+      -webkit-mask-size: contain;
+      vertical-align: middle;
+    }
+
+    .label {
+      color: #881280;
+    }
+
+    .colon {
+      margin: 0 2px;
+    }
+
+    .value {
+      color: #1a1aa6;
+      word-break: break-all;
+      flex: 1;
+    }
+
+    &.object,
+    &.array {
+      &:not(.empty) #triangle {
+        visibility: visible;
+      }
+    }
+
+    &.string {
+      .value {
+        color: #c80000;
+
+        &::after,
+        &::before {
+          content: '"';
+        }
+      }
+    }
+  }
+
+  #children {
+    display: none;
+    padding-left: 1em;
+  }
+}
+
+:host([expanded]) {
+  #self #triangle {
+    transform: rotate(90deg);
+  }
+
+  #children {
+    display: block;
+  }
+}
