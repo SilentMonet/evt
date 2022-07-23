@@ -3,8 +3,9 @@ import ComponentElement from "./ComponentElement";
 
 export enum EventsName {
   Event = "Event",
-  AttachShadow = "AttachShadow",
-  AttrChanged = "AttrChanged",
+  ShadowEvent = "ShadowEvent",
+  AttachShadow = "attachShadow",
+  AttrChanged = "attrChanged",
 }
 
 interface ExtendableTarget {
@@ -23,10 +24,10 @@ interface ListenersMap {
 
 export function EventListener<T extends ExtendableTarget, K>(target: T) {
   return class EventListenerElement extends target {
-    [callbackNames: string|symbol]: any;
+    [callbackNames: string | symbol]: any;
     constructor(...args: any[]) {
       super(...args);
-      const eventListeners: ListenersMap | undefined = Reflect.getOwnMetadata(
+      const eventListeners: ListenersMap | undefined = Reflect.getMetadata(
         EventsName.Event,
         this
       );
@@ -45,7 +46,7 @@ export function EventListener<T extends ExtendableTarget, K>(target: T) {
       });
       this.addEventListener(EventsName.AttachShadow, () => {
         const shadowEventListeners: ListenersMap | undefined =
-          Reflect.getOwnMetadata(EventsName.AttachShadow, this);
+          Reflect.getMetadata(EventsName.ShadowEvent, this);
         Object.entries(shadowEventListeners || {}).forEach(
           ([eventName, config]) => {
             const eventListener = (...args: any) =>
@@ -142,12 +143,12 @@ export function ShadowEventListen<N extends keyof CustomEventMap>(
 ): ListenerDecorator<N> {
   return (target, propertyKey) => {
     const listeners: ListenersMap = Reflect.getOwnMetadata(
-      EventsName.AttachShadow,
+      EventsName.ShadowEvent,
       target
     );
     if (!listeners) {
       Reflect.defineMetadata(
-        EventsName.AttachShadow,
+        EventsName.ShadowEvent,
         { [eventName]: { callbackName: propertyKey, options } },
         target
       );

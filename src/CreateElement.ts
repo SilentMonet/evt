@@ -1,5 +1,7 @@
+import ComponentElement from "./ComponentElement";
+
 export interface ComponentElementConstructor extends Function {
-  tag: string;
+  tagName: string;
 }
 
 function appendChild(
@@ -63,9 +65,9 @@ function CreateElement(
         if (name in element) {
           (element as any)[name] = value;
         } else {
-          if (typeof value === 'boolean') {
-            value && element.setAttribute(name, '');
-          } else { 
+          if (typeof value === "boolean") {
+            value && element.setAttribute(name, "");
+          } else {
             element.setAttribute(name, String(value));
           }
         }
@@ -74,18 +76,23 @@ function CreateElement(
       return element as JSX.IntrinsicElements[typeof tag];
     }
     case "function":
-      const element = document.createElement(tag.tag);
-      for (const [name, value] of Object.entries(props ?? {})) {
+      const element = document.createElement(tag.tagName) as ComponentElement;
+      const properties: any = Object.assign({}, props);
+      for (const [name, value] of Object.entries(properties)) {
         if (name in element) {
-          (element as any)[name] = value;
-        } else {
-          element.setAttribute(name, String(value));
+          try {
+            (element as any)[name] = value;
+            delete properties[name];
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
+      element.properties = properties;
       appendChild(element, children);
       return element;
     default:
-      throw "Unknown Tag"
+      throw "Unknown Tag";
   }
 }
 

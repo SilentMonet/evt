@@ -4,31 +4,27 @@ declare global {
   interface CustomEventMap {
     connected: Event;
     disconnected: Event;
-    [EventsName.AttachShadow]: Event;
+    attachShadow: Event;
   }
 }
 
-export type CustomProperty<Properties extends {}> =
-  OptionalToUndefined<Properties>;
-export default class ComponentElement<T extends {}> extends HTMLElement {
-  static tag: string = "";
-  shadowStyle?: CSSStyleSheet;
-  constructor(props: T) {
+export default class ComponentElement<T = {}> extends HTMLElement {
+  static tagName: string = "";
+  shadowStyle?: CSSStyleSheet | CSSStyleSheet[];
+  constructor(public properties: T) {
     super();
     this.addEventListener("connected", this.init);
   }
-  render() {}
   init() {
     const shadowRoot = this.attachShadow({ mode: "open" });
-    this.dispatchEvent(new CustomElementEvent(EventsName.AttachShadow));
     if (this.shadowStyle) {
-      shadowRoot.adoptedStyleSheets = [this.shadowStyle];
+      shadowRoot.adoptedStyleSheets = Array.isArray(this.shadowStyle)
+        ? this.shadowStyle
+        : [this.shadowStyle];
     }
-    this.render();
+    this.dispatchEvent(new CustomElementEvent("attachShadow"));
   }
-  $(
-    selectors: Parameters<ParentNode["querySelector"]>[0]
-  ): ReturnType<ParentNode["querySelector"]> {
+  $<T extends HTMLElement = HTMLElement>(selectors: string): T | null {
     if (this.shadowRoot) {
       return this.shadowRoot.querySelector(selectors);
     }
