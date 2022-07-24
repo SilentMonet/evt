@@ -1,4 +1,4 @@
-import ComponentElement from "./ComponentElement";
+import { ComponentElement } from "./ComponentElement";
 
 export interface ComponentElementConstructor extends Function {
   tagName: string;
@@ -29,22 +29,22 @@ function appendChild(
 
 type IntsEleType<T> = T extends JSX.Tag ? JSX.IntrinsicElementMap[T] : never;
 
-function CreateElement(
+export function CreateElement(
   tag: Symbol,
   props: never,
   ...children: Node[]
 ): DocumentFragment;
-function CreateElement(
+export function CreateElement(
   tag: JSX.Tag,
   props: JSX.IntrinsicElementMap[typeof tag] | null,
   ...children: Node[]
 ): JSX.IntrinsicElements[typeof tag];
-function CreateElement(
+export function CreateElement(
   tag: ComponentElementConstructor,
   props: Object | null,
   ...children: Node[]
 ): HTMLElement;
-function CreateElement(
+export function CreateElement(
   tag: Symbol | JSX.Tag | ComponentElementConstructor,
   props: IntsEleType<typeof tag> | Object | null,
   ...children: Node[]
@@ -97,5 +97,3 @@ function CreateElement(
 }
 
 CreateElement.Fragment = Symbol("Fragment Element");
-
-export default CreateElement;

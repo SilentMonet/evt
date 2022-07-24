@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import ComponentElement from "./ComponentElement";
+import { ComponentElement } from "./ComponentElement";
 
 export enum EventsName {
   Event = "Event",
@@ -9,7 +9,7 @@ export enum EventsName {
 }
 
 interface ExtendableTarget {
-  new (...args: any[]): ComponentElement<any>;
+  new(...args: any[]): ComponentElement<any>;
   readonly prototype: Object;
 }
 interface ListenerOptions extends AddEventListenerOptions {
@@ -80,7 +80,7 @@ type ListenerDecorator<N extends keyof CustomEventMap> = <
     [P in keyof O]: P extends K ? (e: CustomEventMap[N]) => void : O[P];
   },
   K extends keyof O
->(
+  >(
   target: O,
   propertyKey: K
 ) => void;
@@ -111,7 +111,7 @@ type AttrChangeListenerDecorator = <
     [P in keyof O]: P extends K ? (e: AttrChangeEvent) => void : O[P];
   },
   K extends keyof O
->(
+  >(
   target: O,
   propertyKey: K
 ) => void;

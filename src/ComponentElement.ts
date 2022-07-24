@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-export default class ComponentElement<T = {}> extends HTMLElement {
+export class ComponentElement<T = {}> extends HTMLElement {
   static tagName: string = "";
   shadowStyle?: CSSStyleSheet | CSSStyleSheet[];
   constructor(public properties: T) {

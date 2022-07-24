@@ -16,6 +16,7 @@ type GetWritableKeys<T> = {
 }[keyof T];
 
 type ExcludeReadonly<T> = Pick<T, GetWritableKeys<T>>;
+
 declare namespace JSX {
   type Element = HTMLElement;
 
@@ -30,17 +31,14 @@ declare namespace JSX {
   interface IntrinsicElements extends IntrinsicElementMap {}
 }
 
-declare module "*.less" {
-  const style: CSSStyleSheet;
-  export default style;
-}
-
 declare interface DocumentOrShadowRoot {
   adoptedStyleSheets: CSSStyleSheet[];
 }
+
 interface CustomEventMap extends GlobalEventHandlersEventMap {}
 
-interface AttrChangesEventMap {}
+interface AttrChangesEventMap { }
+
 interface ShadowRoot {
   addEventListener<K extends keyof CustomEventMap>(
     type: K,
@@ -53,26 +51,6 @@ interface ShadowRoot {
     options?: boolean | EventListenerOptions
   ): void;
 }
-
-type GetCustomElementDetailType<T extends keyof CustomEventMap> =
-  "detail" extends keyof CustomEventMap[T]
-    ? CustomEventMap[T]["detail"]
-    : never;
-
-declare var CustomElementEvent: {
-  prototype: CustomEvent;
-  new <T extends keyof CustomEventMap>(
-    type: T,
-    eventInitDict?: CustomEventInit<GetCustomElementDetailType<T>>
-  ): CustomEvent;
-};
-
-declare var CustomBubbleEvent: {
-  new <T extends keyof CustomEventMap>(
-    type: T,
-    detail?: GetCustomElementDetailType<T>
-  ): CustomEvent;
-};
 
 interface AttrChangeEventDetail {
   name: string;
