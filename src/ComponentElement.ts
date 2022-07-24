@@ -1,4 +1,5 @@
 import { EventsName } from "./EventListener";
+import "./GlobalPatch";
 
 declare global {
   interface CustomEventMap {

@@ -22,7 +22,7 @@ interface ListenersMap {
   };
 }
 
-export function EventListener<T extends ExtendableTarget, K>(target: T) {
+export function EventListener<T extends ExtendableTarget>(target: T) {
   return class EventListenerElement extends target {
     [callbackNames: string | symbol]: any;
     constructor(...args: any[]) {
