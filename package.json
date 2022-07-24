@@ -5,8 +5,12 @@
   "main": "index.ts",
   "author": "linyue",
   "license": "MIT",
-  "scripts": {
-  },
+  "files": [
+    "index.ts",
+    "global.d.ts",
+    "src"
+  ],
+  "scripts": {},
   "dependencies": {
     "reflect-metadata": "^0.1.13"
   }
