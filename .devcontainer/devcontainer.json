@@ -1,0 +1,5 @@
+{
+	"name": "Node.js",
+	"image": "node:bullseye",
+	"mounts": ["source=/home/linyue/.ssh,target=/root/.ssh,type=bind,consistency=cached"]
+}
