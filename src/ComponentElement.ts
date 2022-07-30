@@ -5,7 +5,7 @@ declare global {
   interface CustomEventMap {
     connected: Event;
     disconnected: Event;
-    attachShadow: Event;
+    attachShadow: CustomEvent<ShadowRoot>;
   }
 }
 
@@ -14,17 +14,13 @@ export class ComponentElement<T = {}> extends HTMLElement {
   shadowStyle?: CSSStyleSheet | CSSStyleSheet[];
   constructor(public properties: T) {
     super();
-    this.addEventListener("connected", this.init);
   }
-  init() {
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    if (this.shadowStyle) {
-      shadowRoot.adoptedStyleSheets = Array.isArray(this.shadowStyle)
-        ? this.shadowStyle
-        : [this.shadowStyle];
-    }
-    this.dispatchEvent(new CustomElementEvent("attachShadow"));
+  attachShadow(init: ShadowRootInit): ShadowRoot {
+    const shadowRoot = super.attachShadow(init);
+    this.dispatchEvent(new CustomElementEvent("attachShadow", { detail: shadowRoot }));
+    return shadowRoot;
   }
+
   $<T extends HTMLElement = HTMLElement>(selectors: string): T | null {
     if (this.shadowRoot) {
       return this.shadowRoot.querySelector(selectors);
