@@ -1,0 +1,19 @@
+
+@keyframes page-slide-in {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+
+:host{
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background-color: #fff;
+    animation: page-slide-in 0.3s 1 linear;
+}

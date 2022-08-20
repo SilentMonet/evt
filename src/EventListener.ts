@@ -9,7 +9,7 @@ export enum EventsName {
 }
 
 interface ExtendableTarget {
-  new(...args: any[]): ComponentElement<any>;
+  new(...args: any[]): ComponentElement;
   readonly prototype: Object;
 }
 interface ListenerOptions extends AddEventListenerOptions {
@@ -19,7 +19,7 @@ interface ListenersMap {
   [eventName: string]: {
     callbackName: string | number | symbol;
     options?: boolean | ListenerOptions;
-  };
+  }[];
 }
 
 export function EventListener<T extends ExtendableTarget>(target: T) {
@@ -27,50 +27,56 @@ export function EventListener<T extends ExtendableTarget>(target: T) {
     [callbackNames: string | symbol]: any;
     constructor(...args: any[]) {
       super(...args);
-      const eventListeners: ListenersMap | undefined = Reflect.getMetadata(
+      const eventListeners: ListenersMap | undefined = Reflect.getOwnMetadata(
         EventsName.Event,
-        this
+        target.prototype
       );
-      Object.entries(eventListeners || {}).forEach(([eventName, config]) => {
-        const eventListener = (...args: any) =>
-          this[config.callbackName](...args);
-        this.addEventListener(eventName, eventListener, config.options);
-        if (
-          typeof config.options === "object" &&
-          config.options.removeOnDisConnect
-        ) {
-          this.addEventListener("disconnected", () =>
-            this.removeEventListener(eventName, eventListener, config.options)
-          );
-        }
-      });
-      this.addEventListener(EventsName.AttachShadow, () => {
-        const shadowEventListeners: ListenersMap | undefined =
-          Reflect.getMetadata(EventsName.ShadowEvent, this);
-        Object.entries(shadowEventListeners || {}).forEach(
-          ([eventName, config]) => {
-            const eventListener = (...args: any) =>
-              this[config.callbackName](...args);
-            this.shadowRoot?.addEventListener(
-              eventName,
-              eventListener,
-              config.options
+      Object.entries(eventListeners || {}).forEach(([eventName, listeners]) => {
+        listeners.forEach(listener => {
+          const callback = this[listener.callbackName];
+          this.addEventListener(eventName, callback, listener.options);
+          if (
+            typeof listener.options === "object" &&
+            listener.options.removeOnDisConnect
+          ) {
+            this.addEventListener("disconnected", () =>
+              this.removeEventListener(eventName, callback, listener.options)
             );
-            if (
-              typeof config.options === "object" &&
-              config.options.removeOnDisConnect
-            ) {
-              this.addEventListener("disconnected", () =>
-                this.shadowRoot?.removeEventListener(
-                  eventName,
-                  eventListener,
-                  config.options
-                )
-              );
-            }
           }
-        );
+        })
       });
+      const shadowEventListeners: ListenersMap | undefined =
+        Reflect.getOwnMetadata(EventsName.ShadowEvent, target.prototype);
+      if (Object.keys(shadowEventListeners || {}).length !== 0) {
+        this.addEventListener(EventsName.AttachShadow, () => {
+          Object.entries(shadowEventListeners || {}).forEach(
+            ([eventName, listeners]) => {
+              listeners.forEach(listener => {
+                const callback = this[listener.callbackName];
+                this.shadowRoot?.addEventListener(
+                  eventName,
+                  callback,
+                  listener.options
+                );
+                if (
+                  typeof listener.options === "object" &&
+                  listener.options.removeOnDisConnect
+                ) {
+                  this.addEventListener("disconnected", () =>
+                    this.shadowRoot?.removeEventListener(
+                      eventName,
+                      callback,
+                      listener.options
+                    )
+                  );
+                }
+              })
+
+            }
+          );
+        });
+
+      }
     }
   };
 }
@@ -97,11 +103,13 @@ export function EventListen<N extends keyof CustomEventMap>(
     if (!listeners) {
       Reflect.defineMetadata(
         EventsName.Event,
-        { [eventName]: { callbackName: propertyKey, options } },
+        { [eventName]: [{ callbackName: propertyKey, options }] },
         target
       );
+    } else if (!(eventName in listeners)) {
+      listeners[eventName] = ([{ callbackName: propertyKey, options }]);
     } else {
-      listeners[eventName] = { callbackName: propertyKey, options };
+      listeners[eventName].push({ callbackName: propertyKey, options });
     }
   };
 }
@@ -125,14 +133,17 @@ export function AttrChangeListen(
       EventsName.Event,
       target
     );
+    const eventName = EventsName.AttrChanged + ":" + attrName;
     if (!listeners) {
       Reflect.defineMetadata(
         EventsName.Event,
-        { [attrName]: { callbackName: propertyKey, options } },
+        { [eventName]: [{ callbackName: propertyKey, options }] },
         target
       );
+    } else if (!(eventName in listeners)) {
+      listeners[eventName] = ([{ callbackName: propertyKey, options }]);
     } else {
-      listeners[attrName] = { callbackName: propertyKey, options };
+      listeners[eventName].push({ callbackName: propertyKey, options });
     }
   };
 }
@@ -147,13 +158,16 @@ export function ShadowEventListen<N extends keyof CustomEventMap>(
       target
     );
     if (!listeners) {
+      
       Reflect.defineMetadata(
         EventsName.ShadowEvent,
-        { [eventName]: { callbackName: propertyKey, options } },
+        { [eventName]: [{ callbackName: propertyKey, options }] },
         target
       );
+    } else if (!(eventName in listeners)) {
+      listeners[eventName] = ([{ callbackName: propertyKey, options }]);
     } else {
-      listeners[eventName] = { callbackName: propertyKey, options };
+      listeners[eventName].push({ callbackName: propertyKey, options });
     }
   };
 }

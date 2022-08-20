@@ -1,5 +1,3 @@
-import { ComponentElement } from "./ComponentElement";
-
 export interface ComponentElementConstructor extends Function {
   tagName: string;
 }
@@ -76,7 +74,7 @@ export function CreateElement(
       return element as JSX.IntrinsicElements[typeof tag];
     }
     case "function":
-      const element = document.createElement(tag.tagName) as ComponentElement;
+      const element = document.createElement(tag.tagName) as (HTMLElement & { properties: any });
       const properties: any = Object.assign({}, props);
       for (const [name, value] of Object.entries(properties)) {
         if (name in element) {

@@ -72,7 +72,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "global.ts"
+    "global.ts",
+    "type.d.ts"
   ],
   "exclude": [
     "node_modules",

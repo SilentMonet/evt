@@ -11,7 +11,6 @@ declare global {
 
 export class ComponentElement<T = {}> extends HTMLElement {
   static tagName: string = "";
-  shadowStyle?: CSSStyleSheet | CSSStyleSheet[];
   constructor(public properties: T) {
     super();
   }

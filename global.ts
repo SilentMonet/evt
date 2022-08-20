@@ -32,10 +32,6 @@ declare global {
     interface IntrinsicElements extends IntrinsicElementMap { }
   }
 
-  interface DocumentOrShadowRoot {
-    adoptedStyleSheets: CSSStyleSheet[];
-  }
-
   interface CustomEventMap extends GlobalEventHandlersEventMap { }
 
   interface AttrChangesEventMap { }
